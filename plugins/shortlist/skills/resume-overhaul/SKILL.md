@@ -5,19 +5,40 @@ description: Run the whole resume overhaul end to end — diagnose, keyword-chec
 
 # The Overhaul
 
-You run the full loop in one pass and hand back a finished document. Four stages, then two files.
+You run the full loop in one pass and hand back a finished document.
 
-## What this does and doesn't cover
+This skill is an **orchestrator**. It does not contain its own diagnosis, keyword, or rewrite logic — it runs the four specialist skills in order and then assembles what they produce into a document. Running the overhaul must give the user the same depth as running the four skills by hand, because it *is* running them.
 
-Stages 1–3 (diagnose, keyword-check, rewrite) run automatically — they need no input from the user beyond the resume itself.
+## The four skills it runs
 
-Stage 4 of the loop, the mock interview, cannot run automatically. It depends on the user answering questions live. Finish the document, then offer it: "Your CV is rebuilt. Want to run the mock interview now? You'll be asked to defend every number we just put on it." If the **resume-hiring-manager** skill is installed, say they can run it directly.
+| Stage | Skill | Produces |
+| --- | --- | --- |
+| 1 | `resume-diagnoser` | What's broken, ranked top 5 fixes |
+| 2 | `resume-recruiter` | Keywords the role is screened on, gap list |
+| 3 | `resume-rewriter` | Every bullet rebuilt on the XYZ pattern |
+| 4 | `resume-hiring-manager` | Mock interview, scored — offered at the end |
+
+Stages 1–3 run automatically and back to back. They need no input from the user beyond the resume itself.
+
+Stage 4 cannot run inside the automatic pass, because an interview depends on the user answering questions live. Offer it once the document is done, and run it if they say yes.
+
+## How to run each stage
+
+For each of stages 1–3, in order:
+
+1. **Load the specialist skill and follow it in full.** Invoke it the way this environment invokes skills — the Skill tool in Claude Code, or by reading the sibling skill file directly. Do not work from the summary in the table above.
+2. **Produce that skill's complete output**, every section it specifies, in the chat. The diagnoser's top-5-ranked fixes with a before-and-after; the recruiter's top 15 ranked keywords, split gap list, trending skills, buzzwords to cut, and ranked action list; the rewriter's full rewritten section, five before-and-after pairs, and coverage note. If you find yourself producing a shorter version of a stage than that skill would produce on its own, you have got this wrong.
+3. **Pass the output forward.** Each stage is the next stage's input — the recruiter reads the diagnosis, the rewriter takes the recruiter's missing-keywords list verbatim. Never ask the user to paste back something you produced two messages ago.
 
 Don't skip stages to save time. The rewrite is only as good as the keyword pass in front of it.
 
+**If a specialist skill isn't available** — the user installed this one on its own, or the skill won't load — say so plainly and name the missing skill before you continue. Then run that stage as best you can and mark its output as degraded, so the user knows which part to redo. Never silently substitute a thinner version.
+
 ## Collecting inputs
 
-You need: **target role**, **the resume**, and optionally a **specific job posting** and **target companies**.
+Collect everything **once**, up front, so the specialist skills don't each stop to ask.
+
+You need: **target role**, **industry**, **seniority** (junior / mid / senior / lead), **the resume**, and optionally a **specific job posting** and **target companies**.
 
 Read before you ask:
 
@@ -31,39 +52,9 @@ Take the resume as an **attachment** (PDF, DOCX, TXT, MD) or as **pasted text**.
 
 If the user has a specific job posting, ask for it. Everything downstream gets sharper when it's tailored to a real ad rather than a job title.
 
-## Stage 1 — Diagnose
-
-Identify what's breaking. Cover ATS-killers (multi-column layouts, tables, content in headers or footers, text baked into images, ambiguous date formats, non-standard section headings), the weakest line in each section, and the signals a hiring manager for this role expects and can't find.
-
-Don't invent rejection statistics and don't pad the list. Flag what genuinely breaks parsing or buries content, not what is merely unfashionable.
-
-## Stage 2 — Keyword check
-
-Work out what this role is actually screened on.
-
-- If the user supplied a job posting, that's your source. Analyse it directly.
-- If you have web search, search current postings for this role, seniority, and location, and base the list on what you find. Say roughly how many you looked at.
-- If you have neither, say so plainly and give a pattern-based list, flagged as such.
-
-Produce the terms that matter, then split what's missing from the resume in two:
-
-- **Has it, hasn't said it** — real experience the resume doesn't surface. Fix these first; they're free.
-- **Doesn't have it** — genuine gaps. Say whether each is a dealbreaker at this level or a nice-to-have.
-
-## Stage 3 — Rewrite
-
-Rebuild every bullet in the experience section on the XYZ pattern: *accomplished **X** as measured by **Y**, by doing **Z***.
-
-- Lead with a verb. No "responsible for," "helped with," "assisted in."
-- Carry a number, percentage, or measurable outcome wherever one honestly exists.
-- **Never invent a figure.** If a bullet needs a metric the user hasn't given you, collect it in the questions list at the end and mark the bullet `[metric needed]` in the document rather than guessing. An invented number fails at the interview, and that failure is worse than a weak bullet.
-- Use the plainest verb that is true — "led" over "spearheaded," "built" over "architected" if they wrote the code. Inflation is what an experienced screener notices first.
-- Work the missing keywords in where real experience supports them. Where none does, leave the keyword out and say so.
-- One line per bullet, two at most.
-
-Also rewrite the summary and normalise the skills section against the keyword list.
-
 ## Stage 4 — Assemble the document
+
+This stage is the overhaul's own work — no specialist skill covers it.
 
 Build the full CV as clean Markdown first. This is the source of truth for both exports.
 
@@ -77,7 +68,9 @@ Formatting rules, non-negotiable because they're the whole point of the exercise
 - No icons, logos, photos, or text inside images.
 - Two pages maximum unless the user says otherwise. If it overruns, cut the oldest roles down to one line each rather than shrinking the type.
 
-Keep the user's real dates, employers, and titles exactly as given.
+Fold in every fix stage 1 identified, every keyword stage 2 said was landable, and the bullets exactly as stage 3 rewrote them. Rewrite the summary and normalise the skills section against the keyword list.
+
+Keep the user's real dates, employers, and titles exactly as given. Carry `[metric needed]` markers through into the document rather than inventing a figure to fill them.
 
 ## Stage 5 — Export
 
@@ -99,13 +92,16 @@ Verify after converting: the PDF must have selectable text, not an image of text
 
 Name the files `CV-<Surname>-<Role>.docx` / `.pdf`.
 
-## Stage 6 — Report
+## Stage 6 — Report and hand off to the interview
 
 After the files, give a short summary in the chat:
 
 1. The five things that were broken, and what you did about each
 2. Keywords you landed, and any you left out with the reason
 3. **Questions to answer** — every bullet marked `[metric needed]`, with the specific question for each. Tell the user to send the answers and you'll patch the document.
-4. The offer to run the mock interview
 
 Keep this tight. The document is the deliverable; the report is the receipt.
+
+Then offer the last stage: "Your CV is rebuilt. Want to run the mock interview now? You'll be asked to defend every number we just put on it."
+
+If they say yes, run the **resume-hiring-manager** skill in full — load it and follow it, same as stages 1–3. The resume and role are already on file, so go straight to question 1 rather than asking again.

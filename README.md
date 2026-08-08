@@ -17,9 +17,15 @@ finishing with a rebuilt CV exported as DOCX and PDF.
 | `/shortlist:resume-overhaul` | All of the above, plus a finished CV exported as DOCX and PDF |
 
 Run individually, the order is **diagnoser → recruiter → rewriter →
-hiring-manager**. `resume-overhaul` runs the first three automatically and then
-offers the interview rather than running it, because the interview needs live
-back-and-forth and can't be automated.
+hiring-manager**.
+
+`resume-overhaul` is an orchestrator, not a summary. It loads and runs the first
+three skills in full — same depth as running them by hand — feeding each stage's
+output into the next, then assembles and exports the document. It offers the
+interview at the end rather than folding it into the automatic pass, because an
+interview needs live back-and-forth. Say yes and it runs `resume-hiring-manager`
+for you. Because it delegates, install all five even if you only ever type
+`/shortlist:resume-overhaul`.
 
 ## Install for Claude Code
 
