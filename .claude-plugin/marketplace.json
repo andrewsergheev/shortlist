@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "shortlist",
+  "owner": {
+    "name": "Andrew Sergheev",
+    "url": "https://github.com/andrewsergheev"
+  },
+  "metadata": {
+    "description": "Resume and interview skills that take a CV from screened-out to shortlisted",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "shortlist",
+      "source": "./plugins/shortlist",
+      "description": "Five skills that diagnose, keyword-check, rewrite, rebuild and interview-test a resume",
+      "category": "productivity"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "shortlist",
+  "displayName": "Shortlist",
+  "version": "1.0.0",
+  "description": "Diagnose, keyword-check, rewrite, rebuild and interview-test a resume. Run the skills in order, or run resume-overhaul to do the whole thing and export a new CV as DOCX and PDF.",
+  "author": {
+    "name": "Andrew Sergheev",
+    "url": "https://github.com/andrewsergheev"
+  },
+  "repository": "https://github.com/andrewsergheev/shortlist",
+  "license": "MIT",
+  "keywords": ["resume", "cv", "ats", "job-search", "interview"]
+}
