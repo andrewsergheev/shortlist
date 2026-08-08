@@ -1,5 +1,27 @@
 # Changelog
 
+## 1.2.0 — 2026-08-08
+
+`resume-overhaul` is now self-contained. 1.1.0 made it delegate to the other four
+skills, which fixed depth for Claude Code users but left browser users worse off:
+someone who uploaded only `resume-overhaul.skill` got a run with the output specs
+but none of the methodology behind them, including the anti-fabrication rules that
+live in the specialist skills. It now bundles verbatim copies of all four under
+`stages/` and reads them from there, so it works standalone with nothing else
+installed. The degraded-mode branch is gone — there is nothing left to degrade to.
+
+Same artifact ships to both channels: the Claude Code plugin and the browser
+`.skill` file are identical, so there is only one behaviour to test.
+
+Adds `build.sh` and `check.sh`. The four specialist `SKILL.md` files remain the
+single source of truth; `stages/*.md` and `dist/` are generated. `check.sh`
+verifies they haven't drifted and asserts the bundle still contains every
+specialist's output spec — the static check that would have caught the 1.0.0 bug.
+
+Also fixes a naming collision where "Stage 4" referred to two different things,
+and README Route B, which no longer applies to the overhaul now that it is a
+multi-file bundle.
+
 ## 1.1.0 — 2026-08-08
 
 `resume-overhaul` is now a true orchestrator. It previously carried its own

@@ -19,13 +19,12 @@ finishing with a rebuilt CV exported as DOCX and PDF.
 Run individually, the order is **diagnoser → recruiter → rewriter →
 hiring-manager**.
 
-`resume-overhaul` is an orchestrator, not a summary. It loads and runs the first
-three skills in full — same depth as running them by hand — feeding each stage's
-output into the next, then assembles and exports the document. It offers the
-interview at the end rather than folding it into the automatic pass, because an
-interview needs live back-and-forth. Say yes and it runs `resume-hiring-manager`
-for you. Because it delegates, install all five even if you only ever type
-`/shortlist:resume-overhaul`.
+`resume-overhaul` is self-contained — it bundles the other four inside itself, so
+it works on its own with nothing else installed. It runs the first three stages
+in full, same depth as running them by hand, feeding each stage's output into the
+next, then assembles and exports the document. It offers the interview at the end
+rather than folding it into the automatic pass, because an interview needs live
+back-and-forth; say yes and it runs the interview stage for you.
 
 ## Install for Claude Code
 
@@ -54,14 +53,19 @@ of DOCX and PDF.
 
 There are two ways to do this, and neither one needs a command line.
 
-**Route A — upload the file.** Open the [`dist/`](dist/) folder at the top of
-this page and click the skill you want, for example `resume-overhaul.skill`.
-Click the download button to save it to your computer. Now open Claude, go to
-**Settings → Capabilities → Skills → Add**, and upload the file you just
-downloaded. Repeat for each skill you want.
+**Route A — upload the file. This is the one to use.** Open the
+[`dist/`](dist/) folder at the top of this page and click the skill you want, for
+example `resume-overhaul.skill`. Click the download button to save it to your
+computer. Now open Claude, go to **Settings → Capabilities → Skills → Add**, and
+upload the file you just downloaded.
 
-**Route B — copy and paste the text.** Open the
-[`plugins/shortlist/skills/`](plugins/shortlist/skills/) folder above, click a
+If you only want one, make it `resume-overhaul.skill` — it contains the other
+four and does the whole job on its own.
+
+**Route B — copy and paste the text.** This works for the four single-file
+skills only, *not* for `resume-overhaul`, which is a bundle of several files and
+has to be uploaded as a file. For any of the other four, open the
+[`plugins/shortlist/skills/`](plugins/shortlist/skills/) folder above, click the
 skill's folder, then click its `SKILL.md` file. Select everything on the page and
 copy it. In Claude, go to **Settings → Capabilities → Skills → Add**, choose
 **"Write skill instructions"**, and paste it in.
@@ -80,6 +84,21 @@ Attach your CV to the chat and type:
 You get a rebuilt CV back as two files, a DOCX and a PDF. The resume can be an
 attachment or just pasted in as text, and you can paste a real job ad along with
 it to tailor the result to that specific listing.
+
+## Working on this repo
+
+The four specialist `SKILL.md` files are the single source of truth.
+`resume-overhaul/stages/*.md` and everything in `dist/` are generated — never
+edit them by hand.
+
+```sh
+./build.sh   # regenerate stages/ and dist/ after editing any skill
+./check.sh   # verify nothing has drifted out of sync
+```
+
+`check.sh` also asserts that the overhaul bundle still contains every
+specialist's output spec. That check exists because v1.0.0 shipped a condensed
+paraphrase that silently dropped most of them.
 
 ## Credits
 
