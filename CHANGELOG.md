@@ -1,5 +1,29 @@
 # Changelog
 
+## 1.3.0 — 2026-08-09
+
+Support for non-Claude tools.
+
+`SKILL.md` is a cross-tool format, so Codex CLI, Cursor, Antigravity and similar
+agent tools can use these skills unchanged — that part is documentation, not new
+code. README now covers where to copy the folders for each.
+
+ChatGPT Custom GPTs and Gemini Gems have no filesystem and cap their instruction
+boxes below the size of the overhaul (8,000 and roughly 4,000 characters against
+about 21,000). `build.sh` now generates `dist/single-file/`, where the overhaul is
+flattened into one document with the four stage instruction sets appended inline
+and the `stages/` references rewritten. These are meant to be uploaded as
+Knowledge; README gives the loader text to paste into the instruction box.
+
+The flattening is driven by explicit `<!-- bundled:… -->` / `<!-- singlefile:… -->`
+markers in `resume-overhaul/SKILL.md` rather than by pattern-matching its prose,
+and the build aborts if any stage path survives the rewrite. `check.sh` gained
+checks that the single-file editions are in sync, carry every specialist's output
+spec, and contain no dangling `stages/` paths.
+
+No condensed or hand-written variants: every edition is generated from the same
+five source files, so none of them can quietly fall behind.
+
 ## 1.2.0 — 2026-08-08
 
 `resume-overhaul` is now self-contained. 1.1.0 made it delegate to the other four

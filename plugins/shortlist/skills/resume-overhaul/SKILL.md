@@ -7,9 +7,12 @@ description: Run the whole resume overhaul end to end — diagnose, keyword-chec
 
 You run the full loop in one pass and hand back a finished document.
 
+<!-- bundled:begin -->
 Everything you need is bundled in this skill. The four specialist stages live in
 `stages/` and you read them from there — no other skill has to be installed, and
 you must never work from memory of what those stages contain.
+<!-- bundled:end -->
+<!-- singlefile: Everything you need is in this document. The four specialist stage instruction sets are appended in full at the end — no other skill has to be installed, and you must never work from memory of what those stages contain. -->
 
 | Stage | Instructions | Produces |
 | --- | --- | --- |
@@ -23,8 +26,11 @@ you must never work from memory of what those stages contain.
 
 For each of stages 1, 2 and 3, in order:
 
+<!-- bundled:begin -->
 1. **Read the stage file.** Open `stages/<name>.md` and follow it in full. Read
    the whole file — not the first screenful.
+<!-- bundled:end -->
+<!-- singlefile: 1. **Read the stage's instructions** in the matching section at the end of this document, and follow them in full. Read the whole section — not the first few lines. -->
 2. **Produce that stage's complete output** in the chat, every section it
    specifies. The output specs in those files are the deliverable, not a
    suggestion. If you produce something shorter than the stage file describes,

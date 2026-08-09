@@ -73,6 +73,70 @@ copy it. In Claude, go to **Settings → Capabilities → Skills → Add**, choo
 DOCX and PDF export works in the browser without installing anything, as long as
 file creation is turned on in Settings.
 
+## Install for other AI tools
+
+### Codex CLI, Cursor, Antigravity, and other agent tools
+
+`SKILL.md` is a cross-tool format — these skills work unchanged, no conversion
+needed. Clone the repo and copy the skill folders where your tool looks for them:
+
+```sh
+git clone https://github.com/andrewsergheev/shortlist
+cd shortlist
+
+# OpenAI Codex CLI — personal
+cp -r plugins/shortlist/skills/* ~/.codex/skills/
+
+# Google Antigravity, or any tool using the .agents convention
+mkdir -p .agents/skills && cp -r plugins/shortlist/skills/* .agents/skills/
+```
+
+Codex has moved its skills directory between releases — if the skills don't show
+up under `/skills`, check where your version looks and copy there instead. Either
+way, `resume-overhaul` brings its `stages/` folder with it, so keep the folder
+structure intact rather than copying loose `SKILL.md` files.
+
+### ChatGPT (Custom GPT)
+
+A Custom GPT's instructions box holds 8,000 characters. The overhaul is about
+21,000, so it goes in **Knowledge**, not in the instructions box.
+
+1. Download [`dist/single-file/resume-overhaul.md`](dist/single-file/) — one file,
+   everything included.
+2. In ChatGPT go to **Explore GPTs → Create → Configure**.
+3. Under **Knowledge**, click **Upload files** and add the file you downloaded.
+4. Paste this into **Instructions**:
+
+```text
+You rebuild resumes. The file resume-overhaul.md in your Knowledge contains your
+full instructions. Read it in full before you start, and follow every stage in it
+exactly, including the stage instruction sections at the end of that document.
+Do not summarise or shorten any stage. When the user gives you a resume and a
+target role, run the whole process from that file.
+```
+
+The four individual skills are in the same folder if you'd rather build a GPT per
+stage. Each is under 4,000 characters, so those *do* fit in the instructions box
+directly.
+
+### Gemini (Gems)
+
+Gems cap instructions at roughly 4,000 characters, so the overhaul takes the same
+Knowledge route.
+
+1. Download [`dist/single-file/resume-overhaul.md`](dist/single-file/).
+2. In Gemini go to **Gems → New Gem**.
+3. Under **Knowledge**, upload the file.
+4. Paste the same instruction text shown above for ChatGPT.
+
+The four individual skills fit inside a Gem's instruction box directly.
+
+### Anything else
+
+Every one of these is just Markdown. If your tool takes a system prompt, a custom
+instruction, or an uploaded file, paste in whichever file from
+[`dist/single-file/`](dist/single-file/) matches what you want.
+
 ## How to use it
 
 Attach your CV to the chat and type:
@@ -87,9 +151,14 @@ it to tailor the result to that specific listing.
 
 ## Working on this repo
 
-The four specialist `SKILL.md` files are the single source of truth.
-`resume-overhaul/stages/*.md` and everything in `dist/` are generated — never
-edit them by hand.
+The five `SKILL.md` files under `plugins/shortlist/skills/` are the single source
+of truth. `resume-overhaul/stages/*.md` and everything in `dist/` — the `.skill`
+zips and the `single-file/` editions — are generated. Never edit those by hand.
+
+`resume-overhaul/SKILL.md` carries `<!-- bundled:… -->` and `<!-- singlefile:… -->`
+markers around the few lines that differ between the folder edition and the
+flattened one. They're HTML comments, so they don't render; `build.sh` uses them
+to swap those lines and fails loudly if a stage path survives the rewrite.
 
 ```sh
 ./build.sh   # regenerate stages/ and dist/ after editing any skill

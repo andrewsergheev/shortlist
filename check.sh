@@ -65,7 +65,37 @@ for s in "${SPECIALISTS[@]}"; do
   fi
 done
 
-echo "4. dist/*.skill contents match plugins/"
+echo "4. Single-file editions (ChatGPT / Gemini) in sync"
+SINGLE=dist/single-file
+for s in "${SPECIALISTS[@]}"; do
+  if [ ! -f "$SINGLE/$s.md" ]; then
+    bad "missing $SINGLE/$s.md — run ./build.sh"
+  elif diff -q "$STAGES/$s.md" "$SINGLE/$s.md" >/dev/null; then
+    note "ok  $s.md"
+  else
+    bad "$SINGLE/$s.md is stale — run ./build.sh"
+  fi
+done
+if [ ! -f "$SINGLE/resume-overhaul.md" ]; then
+  bad "missing $SINGLE/resume-overhaul.md — run ./build.sh"
+else
+  # The single-file edition has no filesystem, so every stages/ path must have
+  # been rewritten. A leftover path would send the model looking for a file
+  # that cannot exist in a Custom GPT or a Gem.
+  if grep -q "stages/" "$SINGLE/resume-overhaul.md"; then
+    bad "$SINGLE/resume-overhaul.md still references stages/ paths"
+  else
+    note "ok  no dangling stages/ paths"
+  fi
+  for phrase in "${REQUIRED[@]}"; do
+    if ! grep -qiF -- "$phrase" "$SINGLE/resume-overhaul.md"; then
+      bad "single-file overhaul is missing \"$phrase\""
+    fi
+  done
+  note "ok  single-file overhaul spec check done"
+fi
+
+echo "5. dist/*.skill contents match plugins/"
 for d in "$SKILLS"/*/; do
   n=$(basename "$d")
   z="dist/$n.skill"
